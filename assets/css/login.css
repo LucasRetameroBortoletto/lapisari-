@@ -1,0 +1,250 @@
+/* =====================================================================
+   Lapisari · login.css
+   Telas de acesso (login/login.php e login/registerUser.php): cartão preto
+   em duas colunas, centralizado sobre o off-white.
+   ===================================================================== */
+
+.pagina-login {
+    padding-top: 0; /* estas páginas não têm o header fixo */
+}
+
+.login {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: var(--esp-7) var(--esp-4);
+}
+
+.login__cartao {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    width: 100%;
+    max-width: 1040px;
+    min-height: 480px;
+    background-color: var(--cor-preto);
+    border-radius: var(--raio);
+    box-shadow: 0 30px 80px rgba(11, 11, 12, 0.25);
+    color: var(--cor-sobre-preto);
+}
+
+/* Coluna esquerda: identidade, separada do formulário por uma linha fina */
+.login__apresentacao {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--esp-8) var(--esp-7);
+    border-right: 1px solid #2e2f33;
+    text-align: center;
+}
+
+/* Coluna direita: avisos + campos */
+.login__area-formulario {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--esp-8);
+}
+
+.login__marca {
+    display: inline-block;
+    color: var(--cor-sobre-preto);
+}
+
+.login__assinatura {
+    height: 110px;
+    width: auto;
+    margin: 0 auto;
+}
+
+.login__titulo {
+    margin-top: var(--esp-4);
+    font-size: 34px;
+}
+
+.login__subtitulo {
+    margin-top: var(--esp-1);
+    font-size: 16px;
+    color: var(--cor-sobre-preto-suave);
+}
+
+/* Avisos dentro do cartão */
+.login__erro,
+.login__sucesso {
+    margin-bottom: var(--esp-4);
+    padding: var(--esp-2) var(--esp-3);
+    border: 1px solid;
+    border-radius: var(--raio);
+    font-size: 14px;
+}
+
+.login__erro {
+    border-color: rgba(214, 120, 108, 0.4);
+    color: #e3a097;
+}
+
+.login__sucesso {
+    border-color: rgba(150, 190, 160, 0.4);
+    color: #a9cdb2;
+}
+
+.login__formulario {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-5);
+}
+
+.login__campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-2);
+}
+
+.login__campo label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cor-sobre-preto-suave);
+}
+
+.login__campo input {
+    width: 100%;
+    padding: 15px 16px;
+    background-color: var(--cor-preto-elevado);
+    border: 1px solid #2e2f33;
+    border-radius: var(--raio);
+    color: var(--cor-sobre-preto);
+    font-size: 16px;
+}
+
+.login__campo input:hover {
+    border-color: #4a4c51;
+}
+
+.login__campo input:focus {
+    outline: none;
+    border-color: var(--cor-prata);
+}
+
+.login__dica {
+    font-size: 13px;
+    color: var(--cor-sobre-preto-suave);
+}
+
+/* Botão de envio ("Entrar" / "Criar conta") */
+.login__enviar {
+    margin-top: var(--esp-2);
+    padding: 16px;
+    border: 1px solid var(--cor-prata);
+    border-radius: var(--raio);
+    color: var(--cor-sobre-preto);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: background-color var(--transicao), color var(--transicao);
+}
+
+.login__enviar:hover {
+    background-color: var(--cor-sobre-preto);
+    color: var(--cor-preto);
+}
+
+.login__rodape {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--esp-3);
+    margin-top: var(--esp-7);
+    padding-top: var(--esp-6);
+    border-top: 1px solid #2e2f33;
+}
+
+.login__convite {
+    font-size: 14px;
+    color: var(--cor-sobre-preto-suave);
+}
+
+/* Ação secundária ("Criar conta" no login, "Entrar" no cadastro) */
+.login__botao-secundario {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    padding: 14px;
+    border: 1px solid #4a4c51;
+    border-radius: var(--raio);
+    color: var(--cor-sobre-preto);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: border-color var(--transicao), background-color var(--transicao), color var(--transicao);
+}
+
+.login__botao-secundario:hover {
+    border-color: var(--cor-sobre-preto);
+    background-color: var(--cor-sobre-preto);
+    color: var(--cor-preto);
+}
+
+/* "Voltar à loja": link com seta */
+.login__voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    margin-top: var(--esp-2);
+    padding: var(--esp-2) var(--esp-3);
+    color: var(--cor-sobre-preto-suave);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.login__voltar svg {
+    width: 14px;
+    height: 14px;
+}
+
+.login__voltar:hover {
+    color: var(--cor-sobre-preto);
+}
+
+.login__marca:focus-visible,
+.login__enviar:focus-visible,
+.login__botao-secundario:focus-visible,
+.login__voltar:focus-visible {
+    outline-color: var(--cor-prata);
+}
+
+
+/* ---- Telas estreitas: o cartão vira uma coluna só (identidade em cima) ---- */
+@media (max-width: 760px) {
+    .login {
+        padding: var(--esp-5) var(--esp-3);
+    }
+
+    .login__cartao {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .login__apresentacao {
+        padding: var(--esp-6) var(--esp-5);
+        border-right: 0;
+        border-bottom: 1px solid #2e2f33;
+    }
+
+    .login__assinatura {
+        height: 80px;
+    }
+
+    .login__area-formulario {
+        padding: var(--esp-6) var(--esp-5);
+    }
+
+    .login__rodape {
+        margin-top: var(--esp-5);
+        padding-top: var(--esp-5);
+    }
+}

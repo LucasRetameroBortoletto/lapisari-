@@ -1,0 +1,15 @@
+<!-- Imagem padrão para lapiseiras sem foto: a mesma lapiseira do header, em diagonal -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <g transform="translate(200 250) rotate(-55) scale(1.15) translate(-143 -12)"
+     stroke="#a9aba8" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="8.5" width="14" height="7" rx="1.5"/>
+    <rect x="18" y="7" width="158" height="10" rx="0.5"/>
+    <path d="M23 7 V17"/>
+    <path d="M30 7 V4 H116 C120 4 122 5.2 122 7"/>
+    <path d="M176 7.5 H236 V16.5 H176"/>
+    <path d="M181 7.5 V16.5 M186 7.5 V16.5 M191 7.5 V16.5 M196 7.5 V16.5 M201 7.5 V16.5 M206 7.5 V16.5 M211 7.5 V16.5 M216 7.5 V16.5 M221 7.5 V16.5 M226 7.5 V16.5 M231 7.5 V16.5" stroke-width="0.5"/>
+    <path d="M236 7.5 L258 10.5 V13.5 L236 16.5"/>
+    <path d="M258 11.2 H276 V12.8 H258"/>
+    <path d="M276 12 H282" stroke-width="1.2"/>
+  </g>
+</svg>

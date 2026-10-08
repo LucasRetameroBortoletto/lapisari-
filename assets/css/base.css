@@ -1,0 +1,379 @@
+/* =====================================================================
+   Lapisari · base.css
+   Variáveis, reset, tipografia e componentes reutilizáveis
+   (botões, campos, avisos). Carregado em todas as páginas.
+   ===================================================================== */
+
+:root {
+    /* ---- Cores ---------------------------------------------------- */
+    --cor-preto: #0b0b0c;              /* header e login */
+    --cor-preto-elevado: #19191c;      /* superfícies sobre o preto (campos do login) */
+    --cor-fundo: #f5f3ee;              /* off-white do corpo */
+    --cor-superficie: #fbfaf7;         /* cards e formulários, um tom acima do fundo */
+    --cor-foto: #ebe9e3;               /* fundo das fotos de produto */
+    --cor-texto: #1f2023;              /* texto principal (grafite escuro) */
+    --cor-texto-secundario: #55585d;
+    --cor-texto-suave: #8c8f94;        /* legendas, rótulos */
+    --cor-linha: #dcdad4;              /* bordas finas */
+    --cor-linha-forte: #c4c1b9;        /* bordas de campos */
+    --cor-prata: #b4b7bc;              /* acento: detalhes, contador, foco no escuro */
+    --cor-sobre-preto: #f5f3ee;        /* texto sobre o preto */
+    --cor-sobre-preto-suave: #9a9ca1;
+    --cor-erro: #9b3b33;
+    --cor-erro-fundo: #f6e9e6;
+    --cor-sucesso: #3f5e4a;
+    --cor-sucesso-fundo: #e8efe9;
+
+    /* ---- Tipografia ----------------------------------------------- */
+    --fonte-titulo: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --fonte-texto: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --fonte-assinatura: 'Mrs Saint Delafield', 'Brush Script MT', cursive;
+
+    /* ---- Espaçamento (escala de 4 px) ------------------------------ */
+    --esp-1: 4px;
+    --esp-2: 8px;
+    --esp-3: 12px;
+    --esp-4: 16px;
+    --esp-5: 24px;
+    --esp-6: 32px;
+    --esp-7: 48px;
+    --esp-8: 64px;
+    --esp-9: 96px;
+    --esp-10: 128px;
+
+    /* ---- Layout ---------------------------------------------------- */
+    --largura-conteudo: 1320px;
+    --margem-lateral: 48px;
+    --altura-header: 92px;
+    --altura-barra-admin: 52px;
+    /* Espaço ocupado no topo da tela: só o header, ou header + barra do admin
+       (o valor muda sozinho quando a barra existe, veja layout.css) */
+    --altura-topo: var(--altura-header);
+
+    /* ---- Acabamento ------------------------------------------------ */
+    --raio: 2px;                        /* cantos quase retos: mais "joalheria", menos "app" */
+    --transicao: 200ms ease;
+    --sombra-card: 0 1px 2px rgba(11, 11, 12, 0.04), 0 12px 32px rgba(11, 11, 12, 0.06);
+}
+
+
+/* ---- Reset ---------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: var(--fonte-texto);
+    font-size: 16px;
+    line-height: 1.6;
+    /* A Cormorant usa por padrão números "antigos" (1000 parece "1ooo");
+       lining-nums deixa todos os algarismos na mesma altura, em todas as fontes. */
+    font-variant-numeric: lining-nums;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* O atributo hidden precisa vencer classes que definem display (ex.: .botao) */
+[hidden] {
+    display: none !important;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+input,
+button,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+fieldset {
+    border: none;
+    min-width: 0;
+}
+
+a {
+    color: inherit;
+}
+
+/* Foco visível só na navegação por teclado (:focus-visible), em todos os elementos */
+:focus-visible {
+    outline: 2px solid var(--cor-texto);
+    outline-offset: 3px;
+}
+
+
+/* ---- Tipografia ----------------------------------------------------- */
+h1,
+h2,
+h3 {
+    font-family: var(--fonte-titulo);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0.005em;
+}
+
+/* Rótulo pequeno em caixa-alta acima de títulos ("Coleção", "Administração") */
+.sobretitulo {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+    margin-bottom: var(--esp-3);
+}
+
+/* Esconde da tela, mas mantém para leitores de tela */
+.visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.container {
+    width: 100%;
+    max-width: var(--largura-conteudo);
+    margin: 0 auto;
+    padding: 0 var(--margem-lateral);
+}
+
+.container--estreito {
+    max-width: calc(820px + 2 * var(--margem-lateral));
+}
+
+
+/* ---- Botões --------------------------------------------------------- */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-2);
+    padding: 12px 24px;
+    border: 1px solid transparent;
+    border-radius: var(--raio);
+    font-family: var(--fonte-texto);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color var(--transicao), color var(--transicao), border-color var(--transicao);
+}
+
+.botao--primario {
+    background-color: var(--cor-preto);
+    color: var(--cor-sobre-preto);
+}
+
+.botao--primario:hover {
+    background-color: #2a2b2f;
+}
+
+.botao--contorno {
+    background-color: transparent;
+    border-color: var(--cor-texto);
+    color: var(--cor-texto);
+}
+
+.botao--contorno:hover {
+    background-color: var(--cor-preto);
+    border-color: var(--cor-preto);
+    color: var(--cor-sobre-preto);
+}
+
+/* Parece um link: ações secundárias como "Limpar" e "Cancelar" */
+.botao--texto {
+    background-color: transparent;
+    color: var(--cor-texto-secundario);
+    padding-left: var(--esp-3);
+    padding-right: var(--esp-3);
+}
+
+.botao--texto:hover {
+    color: var(--cor-texto);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.botao--perigo {
+    background-color: transparent;
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+.botao--perigo:hover {
+    background-color: var(--cor-erro);
+    color: var(--cor-superficie);
+}
+
+.botao--pequeno {
+    padding: 10px 18px;
+    font-size: 11px;
+}
+
+.botao--largo {
+    width: 100%;
+}
+
+.botao:disabled,
+.botao[aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+/* ---- Campos de formulário ------------------------------------------ */
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo > label,
+.campo__rotulo {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cor-texto-secundario);
+}
+
+.campo__controle {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-linha-forte);
+    border-radius: var(--raio);
+    font-size: 15px;
+    transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+.campo__controle:hover {
+    border-color: var(--cor-texto-suave);
+}
+
+.campo__controle:focus {
+    outline: none;
+    border-color: var(--cor-texto);
+    box-shadow: 0 0 0 3px rgba(31, 32, 35, 0.1);
+}
+
+.campo__controle[aria-invalid="true"] {
+    border-color: var(--cor-erro);
+}
+
+/* Select sem a seta padrão do sistema; a seta é um SVG desenhado no fundo */
+select.campo__controle {
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%2355585d' stroke-width='1.3'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px 8px;
+}
+
+input[type="file"].campo__controle {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+input[type="file"].campo__controle::file-selector-button {
+    margin-right: var(--esp-4);
+    padding: 8px 14px;
+    border: 1px solid var(--cor-texto);
+    border-radius: var(--raio);
+    background-color: transparent;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--transicao), color var(--transicao);
+}
+
+input[type="file"].campo__controle::file-selector-button:hover {
+    background-color: var(--cor-preto);
+    color: var(--cor-sobre-preto);
+}
+
+.campo__ajuda {
+    font-size: 13px;
+    color: var(--cor-texto-suave);
+}
+
+/* Grupo de opções (rádios) */
+.opcoes {
+    display: flex;
+    gap: var(--esp-5);
+    border: none;
+}
+
+.opcoes legend {
+    margin-bottom: var(--esp-3);
+}
+
+.opcao {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.opcao input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--cor-texto);
+    cursor: pointer;
+}
+
+
+/* ---- Avisos --------------------------------------------------------- */
+/* Mensagens dentro da página (ex.: erro geral de um formulário) */
+.alerta {
+    padding: var(--esp-4) var(--esp-5);
+    border-left: 2px solid currentColor;
+    border-radius: var(--raio);
+    font-size: 14px;
+}
+
+.alerta--erro {
+    color: var(--cor-erro);
+    background-color: var(--cor-erro-fundo);
+}
+
+.alerta--sucesso {
+    color: var(--cor-sucesso);
+    background-color: var(--cor-sucesso-fundo);
+}
+
+

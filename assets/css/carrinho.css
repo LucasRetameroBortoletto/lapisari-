@@ -1,0 +1,109 @@
+/* =====================================================================
+   Lapisari · carrinho.css
+   ===================================================================== */
+
+.carrinho {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: var(--esp-8);
+    align-items: start;
+}
+
+.carrinho__lista {
+    list-style: none;
+    border-top: 1px solid var(--cor-linha);
+}
+
+.item-carrinho {
+    display: grid;
+    grid-template-columns: 96px 1fr auto auto;
+    gap: var(--esp-5);
+    align-items: center;
+    padding: var(--esp-5) 0;
+    border-bottom: 1px solid var(--cor-linha);
+}
+
+.item-carrinho__foto {
+    width: 96px;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    padding: var(--esp-2);
+    background-color: var(--cor-foto);
+}
+
+.item-carrinho__marca {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+}
+
+.item-carrinho__modelo {
+    font-family: var(--fonte-titulo);
+    font-size: 26px;
+    line-height: 1.2;
+}
+
+.item-carrinho__detalhe {
+    margin-top: var(--esp-1);
+    font-size: 13px;
+    color: var(--cor-texto-secundario);
+}
+
+.item-carrinho__subtotal {
+    font-family: var(--fonte-titulo);
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* Resumo acompanha a rolagem da lista (sticky), sem sair de baixo do header */
+.resumo {
+    position: sticky;
+    top: calc(var(--altura-topo) + var(--esp-5));
+    padding: var(--esp-6);
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-linha);
+    border-radius: var(--raio);
+}
+
+.resumo__linhas {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: var(--esp-3);
+    margin-bottom: var(--esp-6);
+    font-size: 15px;
+}
+
+.resumo__linhas dt {
+    color: var(--cor-texto-secundario);
+}
+
+.resumo__linhas dd {
+    text-align: right;
+}
+
+.resumo__total {
+    padding-top: var(--esp-3);
+    border-top: 1px solid var(--cor-linha);
+    font-family: var(--fonte-titulo);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--cor-texto) !important;
+}
+
+.carrinho-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--esp-5);
+    color: var(--cor-texto-secundario);
+    font-family: var(--fonte-titulo);
+    font-size: 24px;
+}
+
+/* Fora de estoque: foto e textos apagados, o selo e o "Remover" continuam nítidos */
+.item-carrinho--indisponivel .item-carrinho__foto,
+.item-carrinho--indisponivel .item-carrinho__info {
+    opacity: 0.45;
+}

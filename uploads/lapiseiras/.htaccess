@@ -1,0 +1,14 @@
+# Pasta de fotos enviadas pelo admin (Apache/XAMPP).
+# Mesmo que alguém consiga enviar um arquivo .php disfarçado, ele não é
+# executado nem entregue: aqui dentro só servem as imagens.
+<FilesMatch "\.(php|phtml|phps|php[0-9])$">
+    Require all denied
+</FilesMatch>
+
+# Desliga o PHP na pasta (os IfModule evitam erro 500 quando o PHP não roda como módulo do Apache)
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>

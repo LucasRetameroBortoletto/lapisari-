@@ -1,0 +1,153 @@
+/* =====================================================================
+   Lapisari · forms.css
+   Páginas de formulário: cadastro/edição de lapiseira, cadastro de
+   usuário, consulta e exclusão por ID. Substitui o antigo style/styleForm.css.
+   Layout horizontal e compacto: os campos ficam lado a lado para o
+   formulário inteiro caber na tela sem rolar.
+   ===================================================================== */
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-4);
+    padding: var(--esp-6);
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-linha);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra-card);
+}
+
+/* Campos lado a lado, em colunas de mesma largura */
+.formulario__linha {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--esp-4) var(--esp-5);
+}
+
+/* Formulário de uma linha só (buscar por ID) */
+.formulario--em-linha {
+    flex-direction: row;
+    align-items: flex-end;
+    padding: var(--esp-5);
+}
+
+.formulario--em-linha .campo {
+    flex: 1;
+}
+
+.formulario__acoes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--esp-3);
+    padding-top: var(--esp-4);
+    border-top: 1px solid var(--cor-linha);
+}
+
+/* Foto: prévia ao lado do campo de arquivo */
+.campo-foto {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: var(--esp-4);
+    align-items: center;
+}
+
+.campo-foto__previa {
+    width: 72px;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    padding: var(--esp-1);
+    background-color: var(--cor-foto);
+    border-radius: var(--raio);
+}
+
+
+/* ---- Ficha de uma lapiseira (consulta por ID) ----------------------- */
+.ficha {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--esp-6);
+    margin-top: var(--esp-5);
+    padding: var(--esp-5);
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-linha);
+    border-radius: var(--raio);
+}
+
+.ficha__foto {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    padding: var(--esp-4);
+    background-color: var(--cor-foto);
+}
+
+.ficha__modelo {
+    margin: var(--esp-1) 0 var(--esp-4);
+    font-size: 32px;
+}
+
+.ficha__dados {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--esp-2) var(--esp-6);
+    font-size: 15px;
+}
+
+.ficha__dados dt {
+    color: var(--cor-texto-suave);
+}
+
+.ficha__acoes {
+    display: flex;
+    gap: var(--esp-3);
+    margin-top: var(--esp-5);
+}
+
+.ficha__acoes form {
+    display: contents;
+}
+
+.resultado-vazio {
+    margin-top: var(--esp-5);
+    color: var(--cor-texto-secundario);
+    text-align: center;
+}
+
+
+/* ---- Tela de usuários (app/usuarios.php) ------------------------------ */
+.usuarios__form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--esp-3);
+}
+
+.usuarios__form .campo__controle {
+    width: 200px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-size: 14px;
+}
+
+/* Mensagens soltas na página (fora de um formulário) */
+.pagina .container > .alerta {
+    margin-bottom: var(--esp-4);
+}
+
+/* "Remover a foto atual", logo abaixo da ajuda do campo de foto */
+.campo > .campo-foto__remover {
+    margin-top: var(--esp-2);
+    font-size: 14px;
+    color: var(--cor-texto-secundario);
+    /* dentro de .campo, todo label (.campo > label) ganha o estilo de título
+       do campo (maiúsculas, negrito); aqui é uma opção, então volta ao texto normal */
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.campo__ajuda strong {
+    font-weight: 600;
+    color: var(--cor-texto);
+}

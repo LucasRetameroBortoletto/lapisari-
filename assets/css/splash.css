@@ -1,0 +1,175 @@
+/* =====================================================================
+   Lapisari · splash.css
+   Abertura animada da página inicial: a assinatura escrita à mão ocupando
+   a tela, que depois vira o header (assets/js/splash.js), e o texto de
+   abertura (assets/js/abertura.js). Importado pelo vitrine.css.
+
+   Estados (classes postas pelos scripts):
+     html.com-splash      abertura visível, página travada (splash-inicio.js)
+     html.splash-montada  a tela da abertura já foi criada (splash.js)
+     .splash--pronta      a escrita terminou: aparece o "role para baixo"
+     .splash--saindo      a saída começou (o "role para baixo" some)
+     .splash--esmaecendo  saída simples, só com fade (GSAP indisponível)
+   A saída animada (íris -> bolinha -> header) é feita pelo GSAP no
+   splash.js, mudando o tamanho e os cantos do .splash__fundo (inset e
+   border-radius). Não usa clip-path: animado, ele deixava rastros na tela
+   no Chrome/Edge com a escala do Windows em 125% ou 150%.
+
+   As animações rodam sempre, mesmo com "reduzir movimento" ligado no
+   sistema; para desligar, use ?sem-animacao no endereço (splash-inicio.js).
+   Sem JavaScript nenhuma dessas classes existe, e nada disto aparece.
+   ===================================================================== */
+
+/* Enquanto a abertura está na tela, a página não rola: o primeiro scroll
+   serve só para disparar a saída */
+html.com-splash {
+    overflow: hidden;
+}
+
+/* Cobertura preta provisória: a decisão de mostrar a abertura acontece no
+   <head>, mas a tela da abertura só é criada pelo splash.js um instante
+   depois. Sem isto, a vitrine apareceria por um quadro antes de ser coberta.
+   Sai assim que a tela da abertura existe (html.splash-montada). */
+html.com-splash:not(.splash-montada) body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background-color: var(--cor-preto);
+}
+
+.splash {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+}
+
+/* O header real fica invisível enquanto a abertura existe: é a própria
+   abertura, com o fundo no formato da barra, que faz o papel dele até o fim */
+.com-splash .cabecalho {
+    visibility: hidden;
+}
+
+/* Fundo preto em tela cheia. Começa sem transform de propósito: centralizar
+   com translate(-50%) deixava meio pixel de sobra em telas de tamanho ímpar,
+   e o fundo claro da página aparecia como uma linha no topo e na esquerda.
+   Na saída, o splash.js muda a posição (transform), o tamanho e os cantos.
+   will-change: transform põe o fundo numa camada própria, movida pela placa
+   de vídeo: sem isso, a bolinha subindo deixava rastros na página (linhas
+   finas por onde a borda dela passou) no Chrome/Edge com a escala do
+   Windows em 125% ou 150%. */
+.splash__fundo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cor-preto);
+    will-change: transform;
+}
+
+.splash__palco {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+}
+
+/* A assinatura gigante. Traço mais fino no desenho porque ela é enorme
+   na tela (stroke-width em unidades do SVG, que são ampliadas junto). */
+.splash__assinatura {
+    width: min(70vw, 1080px);
+    height: auto;
+    color: var(--cor-sobre-preto);
+    stroke-width: 1.3;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+.splash--esmaecendo {
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+/* ---- Indicador "role para baixo" -------------------------------------- */
+.splash__indicador {
+    position: absolute;
+    left: 50%;
+    bottom: var(--esp-7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--esp-3);
+    color: var(--cor-sobre-preto-suave);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.splash--pronta .splash__indicador {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.splash--saindo .splash__indicador {
+    opacity: 0;
+    transition-duration: 200ms;
+}
+
+/* Linha vertical com um "grafite" descendo por ela, em loop */
+.splash__linha {
+    position: relative;
+    width: 1px;
+    height: 44px;
+    overflow: hidden;
+    background-color: rgba(245, 243, 238, 0.18);
+}
+
+.splash__linha::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 16px;
+    background-color: var(--cor-sobre-preto);
+    animation: splash-desce 1600ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes splash-desce {
+    0%   { transform: translateY(-16px); }
+    100% { transform: translateY(44px); }
+}
+
+/* ---- Header chegando (saída simples) ------------------------------------
+   Na saída com fade, logotipo, botões e lapiseira aparecem suavemente.
+   Na saída animada, o GSAP escreve o logotipo e faz o fade dos outros. */
+.cabecalho--revelar .cabecalho__marca,
+.cabecalho--revelar .cabecalho__acoes,
+.cabecalho--revelar .cabecalho__lapiseira {
+    animation: splash-header-aparece 600ms ease both;
+}
+
+.cabecalho--revelar .cabecalho__lapiseira {
+    animation-delay: 120ms;
+}
+
+@keyframes splash-header-aparece {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ---- Texto de abertura (assets/js/abertura.js, GSAP SplitText) ----------
+   O SplitText separa o título em palavras, cada uma dentro de uma "máscara"
+   (.palavra-mask, com overflow escondido): a palavra sobe de trás dela.
+   O padding de baixo (compensado pela margem negativa) deixa espaço para as
+   partes que descem da linha (p, ç, j), senão elas seriam cortadas. */
+.palavra-mask {
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+}

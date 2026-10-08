@@ -1,0 +1,348 @@
+/* =====================================================================
+   Lapisari · layout.css
+   Header fixo, barra do administrador, cabeçalhos de página,
+   tabela e rodapé. Carregado em todas as páginas.
+   ===================================================================== */
+
+/* O header é fixo (sai do fluxo da página), então o corpo começa
+   abaixo dele. A altura vem de uma variável só, usada nos dois lugares. */
+body {
+    padding-top: var(--altura-header);
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; /* empurra o rodapé para o fim da tela em páginas curtas */
+}
+
+
+/* ---- Header --------------------------------------------------------- */
+.cabecalho {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--altura-header);
+    background-color: var(--cor-preto);
+    color: var(--cor-sobre-preto);
+}
+
+/* Logotipo e lapiseira centralizados no header (left: 50% + translateX(-50%)) */
+.cabecalho__marca {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: block;
+    padding: 0 var(--esp-2);
+    color: var(--cor-sobre-preto);
+}
+
+/* Logotipo: a assinatura em SVG (views/componentes/assinatura.php).
+   stroke-width em unidades do desenho: com o logo pequeno, um traço
+   mais grosso no desenho resulta em ~1.3px na tela. */
+.cabecalho__assinatura {
+    height: 60px;
+    width: auto;
+    stroke-width: 4;
+}
+
+.cabecalho__marca:focus-visible {
+    outline-color: var(--cor-prata);
+    outline-offset: 0;
+}
+
+.cabecalho__lapiseira {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;             /* "quase encostada" na base do header */
+    width: 190px;
+    height: auto;
+    transform: translateX(-50%);
+    color: var(--cor-prata);
+}
+
+.cabecalho__acoes {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: var(--margem-lateral);
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+}
+
+.botao-cabecalho {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    padding: 9px 14px;
+    border: 1px solid transparent;
+    border-radius: var(--raio);
+    color: var(--cor-sobre-preto);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color var(--transicao), color var(--transicao);
+}
+
+.botao-cabecalho:hover {
+    border-color: rgba(245, 243, 238, 0.35);
+}
+
+/* "Olá, Ana": quem está logado */
+.cabecalho__ola {
+    margin-right: var(--esp-2);
+    color: var(--cor-sobre-preto-suave);
+    font-size: 13px;
+}
+
+/* "Entrar" com contorno fino: deixa claro que é um botão */
+.botao-cabecalho--contorno {
+    border-color: rgba(180, 183, 188, 0.45);
+}
+
+.botao-cabecalho--contorno:hover {
+    border-color: var(--cor-sobre-preto);
+}
+
+.botao-cabecalho:focus-visible {
+    outline-color: var(--cor-prata);
+    outline-offset: 2px;
+}
+
+.botao-cabecalho .icone {
+    width: 17px;
+    height: 17px;
+}
+
+/* Contador de itens do carrinho */
+.contador {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background-color: var(--cor-prata);
+    color: var(--cor-preto);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.contador--vazio {
+    background-color: transparent;
+    color: var(--cor-sobre-preto-suave);
+    box-shadow: inset 0 0 0 1px rgba(245, 243, 238, 0.25);
+}
+
+
+/* ---- Barra do administrador ---------------------------------------- */
+.barra-admin {
+    /* sticky: a barra acompanha a rolagem e fica sempre logo abaixo do header,
+       em qualquer página (antes ela rolava junto e sumia na página inicial) */
+    position: sticky;
+    top: var(--altura-header);
+    z-index: 90;
+    height: var(--altura-barra-admin);   /* a borda de baixo já está incluída */
+    background-color: var(--cor-superficie);
+    border-bottom: 1px solid var(--cor-linha);
+}
+
+/* Quando a página tem a barra do admin, o "topo" ocupado passa a ser
+   header + barra. :has() = "o body que contém uma .barra-admin". */
+body:has(.barra-admin) {
+    --altura-topo: calc(var(--altura-header) + var(--altura-barra-admin));
+}
+
+.barra-admin__conteudo {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-6);
+    height: 100%;
+}
+
+/* Link "‹ Vitrine": separado dos outros por uma linha fina à direita */
+.barra-admin__voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    padding-right: var(--esp-5);
+    border-right: 1px solid var(--cor-linha);
+    color: var(--cor-texto);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.barra-admin__voltar svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--transicao);
+}
+
+.barra-admin__voltar:hover svg {
+    transform: translateX(-3px);
+}
+
+.barra-admin__rotulo {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+}
+
+.barra-admin__links {
+    display: flex;
+    gap: var(--esp-5);
+    margin-right: auto; /* joga o botão de cadastrar para a direita */
+}
+
+.barra-admin__links a {
+    padding: var(--esp-1) 0;
+    border-bottom: 1px solid transparent;
+    color: var(--cor-texto-secundario);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color var(--transicao), border-color var(--transicao);
+}
+
+.barra-admin__links a:hover,
+.barra-admin__links a[aria-current="page"] {
+    color: var(--cor-texto);
+    border-bottom-color: var(--cor-texto);
+}
+
+
+/* ---- Cabeçalho das páginas internas --------------------------------- */
+.pagina {
+    padding: var(--esp-7) 0 var(--esp-8);
+}
+
+.pagina__topo {
+    margin-bottom: var(--esp-5);
+}
+
+.pagina__titulo {
+    font-size: 36px;
+}
+
+.pagina__texto {
+    max-width: 640px;
+    margin-top: var(--esp-2);
+    color: var(--cor-texto-secundario);
+}
+
+
+/* ---- Tabela (relatório) --------------------------------------------- */
+.tabela-container {
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-linha);
+    border-radius: var(--raio);
+}
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tabela th {
+    padding: var(--esp-4) var(--esp-4);
+    border-bottom: 1px solid var(--cor-linha);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+}
+
+.tabela td {
+    padding: var(--esp-3) var(--esp-4);
+    border-bottom: 1px solid var(--cor-linha);
+    vertical-align: middle;
+}
+
+.tabela tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabela tbody tr:hover {
+    background-color: var(--cor-fundo);
+}
+
+.tabela__numero {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.tabela__miniatura {
+    width: 48px;
+    height: 60px;
+    object-fit: contain;
+    background-color: var(--cor-foto);
+}
+
+/* Rótulo de estado (Na vitrine / Fora da vitrine) */
+.selo {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid var(--cor-linha-forte);
+    border-radius: 999px;
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto-secundario);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* Item do carrinho que saiu da vitrine */
+.selo--indisponivel {
+    border-color: transparent;
+    background-color: var(--cor-erro-fundo);
+    color: var(--cor-erro);
+    white-space: nowrap;
+}
+
+.selo--ativo {
+    border-color: transparent;
+    background-color: var(--cor-sucesso-fundo);
+    color: var(--cor-sucesso);
+}
+
+
+/* ---- Rodapé --------------------------------------------------------- */
+.rodape {
+    border-top: 1px solid var(--cor-linha);
+    padding: var(--esp-5) 0;
+}
+
+.rodape__conteudo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--esp-6);
+}
+
+.rodape__marca {
+    font-family: var(--fonte-assinatura);
+    font-size: 32px;
+    line-height: 1.1;
+}
+
+.rodape__texto {
+    font-size: 13px;
+    color: var(--cor-texto-suave);
+}
+
+

@@ -1,0 +1,247 @@
+/* =====================================================================
+   Lapisari · caminho.css
+   Seção conceitual em "caminho" (assets/js/caminho.js). Importado pelo
+   vitrine.css.
+
+   A página rola normalmente. Cada pilar divide uma linha com um
+   "companheiro" (.detalhe) que preenche a outra metade, em escada:
+
+     linha 1:  pilar 1   | marcas
+     linha 2:  bitolas   | pilar 2
+     linha 3:  pilar 3   | bilhete escrito à mão
+
+   Uma linha de grafite (SVG criado pelo caminho.js) passa por cima dos
+   pilares: topo do 1 -> desce no meio -> topo do 2 -> desce na borda
+   direita -> volta pela linha 3 inteira. É desenhada conforme a rolagem,
+   com a lapiseira na ponta; pilar e companheiro aparecem quando ela chega.
+
+   Tudo aqui depende da classe .conceito--caminho (ou de elementos que só o
+   caminho.js cria). Sem JS ou com ?sem-animacao, nada disto se aplica:
+   os pilares ficam lado a lado, como no vitrine.css.
+   ===================================================================== */
+
+.conceito--caminho {
+    padding-bottom: var(--esp-9);
+}
+
+.conceito--caminho .pilares {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0;
+    row-gap: 12vh;
+    margin-top: var(--esp-7);
+}
+
+/* Posição de cada peça na escada */
+.conceito--caminho .pilar:nth-of-type(1)    { grid-area: 1 / 1; }
+.conceito--caminho .detalhe--marcas         { grid-area: 1 / 2; }
+.conceito--caminho .pilar:nth-of-type(2)    { grid-area: 2 / 2; }
+.conceito--caminho .detalhe--bitolas        { grid-area: 2 / 1; }
+.conceito--caminho .pilar:nth-of-type(3)    { grid-area: 3 / 1; }
+.conceito--caminho .detalhe--nota           { grid-area: 3 / 2; }
+
+/* O pilar vira: número grande | ícone | título e texto.
+   A linha fina do topo sai: quem passa por ali agora é o caminho de grafite. */
+.conceito--caminho .pilar {
+    display: grid;
+    grid-template-columns: auto 64px minmax(0, 1fr);
+    grid-template-areas:
+        "numero icone titulo"
+        "numero icone texto";
+    align-items: center;
+    align-content: start;
+    column-gap: var(--esp-5);
+    border-top: none;
+    /* respiro à direita: é por ali que a linha (e a lapiseira) desce */
+    padding: var(--esp-6) var(--esp-8) 0 var(--esp-5);
+}
+
+.conceito--caminho .detalhe {
+    padding: var(--esp-6) var(--esp-8) 0;
+}
+
+.conceito--caminho .pilar__numero {
+    grid-area: numero;
+    margin: 0;
+    font-size: clamp(80px, 7vw, 104px);   /* menor em telas de 1280px */
+    line-height: 1;
+    /* Número vazado: só o contorno, em cinza suave */
+    color: transparent;
+    -webkit-text-stroke: 1px var(--cor-texto-suave);
+}
+
+.conceito--caminho .pilar__icone {
+    grid-area: icone;
+    width: 64px;
+    height: 64px;
+    margin: 0;
+    color: var(--cor-texto);
+    stroke-width: 0.9;
+}
+
+.conceito--caminho .pilar__titulo {
+    grid-area: titulo;
+    align-self: end;
+    margin-bottom: var(--esp-2);
+    font-size: 34px;
+    line-height: 1.15;
+}
+
+.conceito--caminho .pilar__texto {
+    grid-area: texto;
+    align-self: start;
+    font-size: 16px;
+}
+
+/* ---- Entrada de cada pilar e do companheiro ------------------------------
+   Quando a linha chega num pilar, o caminho.js toca uma timeline do GSAP
+   (número e título sobem pela máscara, ícone e bitolas são desenhados com
+   DrawSVG, marcas sobem, bilhete é "escrito"); se a pessoa rola de volta, a
+   timeline toca ao contrário. Por isso não há estados nem transições aqui. */
+
+/* ---- Rabisco de teste do grafite (embaixo do pilar 1) --------------------
+   Criado pelo caminho.js e desenhado junto com a descida da linha até o
+   pilar 2. Fica numa linha própria do grid do pilar, abaixo do texto, para
+   nunca encostar nele. */
+.conceito--caminho .pilar:nth-of-type(1) {
+    grid-template-areas:
+        "numero icone titulo"
+        "numero icone texto"
+        "rabisco rabisco rabisco";
+}
+
+.rabisco-grafite {
+    grid-area: rabisco;
+    width: min(100%, 460px);
+    height: auto;
+    margin-top: var(--esp-7);
+    overflow: visible;
+}
+
+.rabisco-grafite path {
+    fill: none;
+    stroke: var(--cor-texto);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.7;
+    vector-effect: non-scaling-stroke;   /* espessura igual em qualquer tamanho */
+    visibility: hidden;                  /* o JS mostra ao começar a desenhar */
+}
+
+/* ---- Companheiros (.detalhe) --------------------------------------------- */
+.detalhe__rotulo {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+}
+
+/* Marcas: nomes grandes, um por linha, subindo pela máscara em sequência */
+.detalhe-marcas {
+    list-style: none;
+    margin-top: var(--esp-3);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(34px, 3.4vw, 46px);
+    font-style: italic;
+    line-height: 1.12;
+}
+
+/* As marcas pares ficam vazadas (só contorno): ritmo, sem pesar */
+.detalhe-marcas li:nth-child(even) {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--cor-texto-secundario);
+}
+
+/* Bitolas: rótulo à esquerda, traço de grafite com a espessura proporcional */
+.conceito--caminho .detalhe--bitolas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-3);
+}
+
+.detalhe-bitola {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    align-items: center;
+    gap: var(--esp-4);
+}
+
+.detalhe-bitola__valor {
+    font-family: var(--fonte-titulo);
+    font-size: 17px;
+    font-style: italic;
+    color: var(--cor-texto-secundario);
+}
+
+.detalhe-bitola svg {
+    width: 100%;
+    height: 12px;
+    overflow: visible;
+}
+
+.detalhe-bitola path {
+    fill: none;
+    stroke: var(--cor-texto);
+    stroke-linecap: round;
+    opacity: 0.85;
+}
+
+/* Bilhete: letra à mão (fonte do logotipo), cada linha "escrita" da esquerda
+   para a direita, uma depois da outra (clip-path abrindo como a caneta) */
+.detalhe-nota {
+    margin-bottom: var(--esp-3);
+    font-family: var(--fonte-assinatura);
+    font-size: clamp(40px, 3.8vw, 54px);
+    line-height: 1.15;
+    color: var(--cor-texto);
+}
+
+/* Cada linha é um bloco da largura do texto: o GSAP abre o clip-path dela
+   da esquerda para a direita, como a caneta escrevendo */
+.detalhe-nota span {
+    display: block;
+    width: max-content;
+}
+
+/* ---- O caminho de grafite -------------------------------------------------
+   Camada por trás dos pilares, do tamanho do grupo */
+.caminho-grafite {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.caminho-grafite__linha {
+    fill: none;
+    stroke: var(--cor-texto);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.75;
+}
+
+/* A lapiseira que escreve (clone da do header, criado pelo JS).
+   O JS põe a ponta do grafite (x = 282 de 300 no desenho) sobre o fim do
+   traço; ela fica inclinada, como uma lapiseira na mão ao escrever.
+   A margem negativa leva a ponta para o ponto 0,0 do elemento. */
+.caminho-grafite__lapiseira {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 175px;
+    height: 14px;                    /* mesma proporção do desenho (300 x 24) */
+    /* Ponta do grafite: x = 282/300 da largura (164.5px), meio da altura (7px).
+       O transform-origin fica nela: o GSAP gira a lapiseira em volta da ponta. */
+    margin: -7px 0 0 -164.5px;
+    transform-origin: 164.5px 7px;
+    /* Posição, inclinação (acompanha a direção da linha) e o "virar na mão"
+       ao escrever para a esquerda: tudo pelo GSAP, no caminho.js */
+    color: var(--cor-texto-secundario);
+    opacity: 0;
+    pointer-events: none;
+}
