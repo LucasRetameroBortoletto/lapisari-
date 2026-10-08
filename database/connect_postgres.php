@@ -7,10 +7,10 @@
  * A estrutura das tabelas está em database/estrutura.sql.
  */
 
-$host = "192.168.10.34";
-$dbname = "lapisari";
-$user = "postgres";
-$pass = "Lucas_210978";
+$host = "";
+$dbname = "";
+$user = "";
+$pass = "";
 
 // try/catch: se algo dentro do try der erro, o PHP pula para o catch em vez de parar com erro
 try {

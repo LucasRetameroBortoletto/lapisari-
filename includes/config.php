@@ -10,7 +10,7 @@
 //   php -S localhost:8000 rodado dentro desta pasta -> ''
 //   Apache em http://localhost/lapisari-simples/  -> '/lapisari-simples'
 // define(): cria uma constante, um valor fixo que vale no projeto inteiro
-define('BASE_URL', 'Prencher_aqui');
+define('BASE_URL', '');
 
 function url($caminho) {
     // str_replace(procura, troca, texto): troca todo ' ' por '%20'
