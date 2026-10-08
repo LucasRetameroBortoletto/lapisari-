@@ -297,128 +297,277 @@ Todo arquivo PHP começa com um bloco `/** ... */` que diz o que ele faz e com q
 
 ## 8. Como rodar
 
-### Pré-requisitos
+Todos os comandos abaixo podem ser **copiados e colados exatamente como estão**. Cada bloco é um comando: cole um, aperte Enter e espere terminar antes de colar o próximo (o `psql` pede a senha do banco, e uma linha colada junto seria lida como senha).
 
-- **Git**, para baixar o projeto.
-- **PHP 8** com as extensões `pdo_pgsql` e `fileinfo` habilitadas. Para conferir, rode `php -m` e procure as duas na lista.
-- **PostgreSQL**, com o `psql` (terminal) ou o **pgAdmin** (programa com janelas).
+No **Windows**, use o **PowerShell** (menu Iniciar → digite *PowerShell* → Enter). No **Linux**, use o terminal.
 
-> **Navegando no terminal:**
-> - `cd nome-da-pasta` entra numa pasta;
-> - `cd ..` volta para a pasta de cima;
-> - `cd ~` volta para a pasta do usuário;
-> - `pwd` mostra em que pasta você está (Git Bash, PowerShell e Linux; no CMD do Windows, digite só `cd`);
-> - `ls` (ou `dir` no CMD) lista o que há na pasta.
+### Escolha o seu caso
+
+| Caso | Quando usar | Pasta do projeto | Endereço no navegador |
+|---|---|---|---|
+| **A** – Windows, servidor do PHP | Testar no seu computador (o mais simples) | `C:\Users\SEU_USUARIO\mini-sistema` | http://localhost:8000 |
+| **B** – Windows, XAMPP | Usar o Apache do XAMPP | `C:\xampp\htdocs\mini-sistema` | http://localhost/mini-sistema/ |
+| **C** – Linux, Apache ou nginx | Publicar num servidor | `/var/www/html/mini-sistema` | `http://IP-DO-SERVIDOR/mini-sistema/` |
+
+Siga os passos abaixo usando só os blocos do seu caso.
+
+### Passo 0: conferir os programas
+
+Você precisa de **Git**, **PHP 8** (com as extensões `pdo_pgsql` e `fileinfo`) e **PostgreSQL**.
+
+**Windows (A e B):** se o PowerShell disser que `php` ou `psql` "não é reconhecido", estes dois comandos os encontram nas pastas padrão do XAMPP e do PostgreSQL. Eles valem até fechar a janela do PowerShell; se fechar, cole de novo.
+
+```powershell
+$env:Path += ";C:\xampp\php"
+```
+
+```powershell
+$env:Path += ";" + (Get-ChildItem "C:\Program Files\PostgreSQL" | Sort-Object Name | Select-Object -Last 1).FullName + "\bin"
+```
+
+Para conferir, cole os três comandos abaixo. Cada um deve mostrar uma versão, e o do meio deve listar `fileinfo` e `pdo_pgsql`:
+
+```powershell
+git --version
+```
+
+```powershell
+php -m | Select-String "pdo_pgsql|fileinfo"
+```
+
+```powershell
+psql --version
+```
+
+**Linux (C):**
+
+```bash
+git --version
+```
+
+```bash
+php -m | grep -E "pdo_pgsql|fileinfo"
+```
+
+```bash
+psql --version
+```
 
 ### Passo 1: baixar o projeto
 
-Primeiro, entre com `cd` na pasta onde o projeto vai ficar. Ela depende de como o site vai rodar:
+O comando entra na pasta certa, baixa o projeto numa pasta chamada `mini-sistema` e entra nela.
 
-| Como o site vai rodar | Onde baixar | Comando |
-|---|---|---|
-| Servidor do PHP (`php -S`) | Qualquer pasta, por exemplo a Área de Trabalho | `cd ~/Desktop` |
-| XAMPP, no Windows | Pasta `htdocs` do XAMPP | `cd C:\xampp\htdocs` |
-| Apache ou nginx, no Linux | Raiz do site do servidor | `cd /var/www/html` |
+**A – Windows, servidor do PHP:**
 
-Depois, baixe o projeto e entre na pasta dele:
-
-```bash
-git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema
-cd mini-sistema
+```powershell
+cd ~; git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema; cd mini-sistema
 ```
 
-O `mini-sistema` no fim do `git clone` é o nome da pasta que será criada (sem ele, ela se chamaria `lapisari-`). Esse nome importa: ele aparece no endereço do site e no `BASE_URL` (passo 4).
+**B – Windows, XAMPP:**
 
-> No Linux, dentro de `/var/www/html`, pode ser preciso usar `sudo git clone ...`.
+```powershell
+cd C:\xampp\htdocs; git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema; cd mini-sistema
+```
 
-**Todos os comandos dos próximos passos são rodados de dentro da pasta `mini-sistema`.**
-
-Para baixar as atualizações do projeto mais tarde:
+**C – Linux:**
 
 ```bash
-cd mini-sistema
-git pull
+cd /var/www/html && sudo git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema && cd mini-sistema
 ```
+
+O nome `mini-sistema` no fim do `git clone` importa: sem ele a pasta se chamaria `lapisari-`, e o endereço do site e o `BASE_URL` (passo 4) não combinariam.
+
+**Os passos 2 a 4 continuam no mesmo terminal, dentro da pasta `mini-sistema`.**
+
+> **Navegando no terminal:** `cd ..` volta para a pasta de cima, `cd ~` vai para a pasta do usuário, `pwd` mostra em que pasta você está e `ls` lista o que há nela.
 
 ### Passo 2: criar o banco de dados
 
-Crie o banco e as tabelas:
+O primeiro comando cria o banco `lapisari`. O segundo cria as tabelas (`usuarios`, `lapiseiras` e `carrinho_itens`) e cadastra 5 lapiseiras de exemplo. Cada um pede a senha do usuário `postgres`.
 
-```bash
+**Windows (A e B):**
+
+```powershell
 psql -U postgres -c "CREATE DATABASE lapisari;"
+```
+
+```powershell
 psql -U postgres -d lapisari -f database/estrutura.sql
 ```
 
-O primeiro comando cria o banco `lapisari`; o segundo cria as tabelas (`usuarios`, `lapiseiras` e `carrinho_itens`) e cadastra 5 lapiseiras de exemplo. Troque `postgres` pelo seu usuário do PostgreSQL, se for outro.
+**Linux (C):**
 
-> **Pelo pgAdmin:** clique com o botão direito em *Databases* → *Create* → *Database*, dê o nome `lapisari` e salve. Depois, clique no banco novo → *Query Tool* → abra o arquivo `database/estrutura.sql` → execute (F5).
+```bash
+sudo -u postgres psql -c "CREATE DATABASE lapisari;"
+```
+
+```bash
+sudo -u postgres psql -d lapisari -f /var/www/html/mini-sistema/database/estrutura.sql
+```
+
+> **Pelo pgAdmin, sem terminal:** clique com o botão direito em *Databases* → *Create* → *Database*, dê o nome `lapisari` e salve. Depois, clique no banco novo → *Query Tool* → abra o arquivo `database/estrutura.sql` → execute (F5).
 
 O script pode ser rodado de novo sem perder dados: ele não altera tabelas que já existem. Para recriar tudo do zero (apagando os dados), veja o passo 0 dentro do `estrutura.sql`.
 
 ### Passo 3: configurar a conexão com o banco
 
-Abra `database/connect_postgres.php` e troque as quatro variáveis pelos dados do seu PostgreSQL:
+Abra o arquivo da conexão:
+
+**Windows (A e B):**
+
+```powershell
+notepad database\connect_postgres.php
+```
+
+**Linux (C):**
+
+```bash
+sudo nano /var/www/html/mini-sistema/database/connect_postgres.php
+```
+
+Troque as quatro linhas do começo por estas e, na última, escreva a senha do seu PostgreSQL no lugar de `sua_senha`:
 
 ```php
-$host = "localhost";     // onde o PostgreSQL está (localhost = no próprio computador, ou o IP do servidor)
-$dbname = "lapisari";    // o banco criado no passo 2
-$user = "postgres";      // o usuário do PostgreSQL
-$pass = "sua_senha";     // a senha desse usuário
+$host = "localhost";
+$dbname = "lapisari";
+$user = "postgres";
+$pass = "sua_senha";
 ```
+
+- `$host`: onde o PostgreSQL está. `localhost` é o próprio computador; se o banco estiver em outra máquina, use o IP dela.
+- `$dbname`: o banco criado no passo 2.
+- `$user` e `$pass`: o usuário e a senha do PostgreSQL.
+
+Salve (no Notepad, Ctrl+S; no nano, Ctrl+O, Enter e Ctrl+X para sair).
 
 ### Passo 4: ajustar o endereço base (`BASE_URL`)
 
-Abra `includes/config.php` e ajuste o `BASE_URL` conforme a forma de rodar:
+O `BASE_URL`, em `includes/config.php`, é a pasta do projeto no endereço do site. Se ele não combinar com o endereço, a página abre sem estilo.
 
-| Como o site roda | Endereço no navegador | `BASE_URL` |
-|---|---|---|
-| Servidor do PHP, rodando dentro da pasta `mini-sistema` | `http://localhost:8000` | `''` |
-| XAMPP, Apache ou nginx, com a pasta `mini-sistema` na raiz do site | `http://localhost/mini-sistema/` | `'/mini-sistema'` |
+**A – Windows, servidor do PHP:** não precisa mudar nada. O projeto já vem com `define('BASE_URL', '');`.
 
-Se o `BASE_URL` não combinar com o endereço, a página abre sem estilo e sem scripts.
+**B – Windows, XAMPP:** abra o arquivo,
+
+```powershell
+notepad includes\config.php
+```
+
+troque a linha do `define('BASE_URL', ...)` por esta e salve:
+
+```php
+define('BASE_URL', '/mini-sistema');
+```
+
+**C – Linux:** este comando faz a troca sozinho:
+
+```bash
+sudo sed -i "s|define('BASE_URL', '[^']*');|define('BASE_URL', '/mini-sistema');|" /var/www/html/mini-sistema/includes/config.php
+```
 
 ### Passo 5: iniciar o site
 
-**Servidor do PHP:** de dentro da pasta `mini-sistema`, rode
+**A – Windows, servidor do PHP:**
 
-```bash
+```powershell
 php -S localhost:8000
 ```
 
-e abra http://localhost:8000. Deixe o terminal aberto enquanto usa o site; para parar, aperte Ctrl+C.
+Abra http://localhost:8000 no navegador. Deixe o PowerShell aberto enquanto usa o site; para parar, aperte Ctrl+C.
 
-**XAMPP:** abra o *XAMPP Control Panel*, clique em *Start* ao lado de *Apache* e abra http://localhost/mini-sistema/.
+**B – Windows, XAMPP:** abra o painel do XAMPP e clique em *Start* ao lado de *Apache*:
 
-**Apache ou nginx no Linux:** o servidor já está rodando; abra `http://IP-DO-SERVIDOR/mini-sistema/`. Para o upload de fotos funcionar, o PHP precisa poder gravar na pasta de fotos:
+```powershell
+Start-Process C:\xampp\xampp-control.exe
+```
+
+Depois, abra o site:
+
+```powershell
+Start-Process http://localhost/mini-sistema/
+```
+
+**C – Linux:** o Apache/nginx já está rodando. Dê ao PHP permissão de gravar na pasta de fotos (sem isso o upload de fotos falha):
 
 ```bash
-sudo chown -R www-data:www-data uploads/lapiseiras
+sudo chown -R www-data:www-data /var/www/html/mini-sistema/uploads/lapiseiras
+```
+
+Este comando mostra o endereço do site para abrir no navegador:
+
+```bash
+echo "http://$(hostname -I | awk '{print $1}')/mini-sistema/"
 ```
 
 **Deu certo se** a página inicial abre com a assinatura "Lapisari" e, descendo, a vitrine mostra as 5 lapiseiras de exemplo.
 
 ### Passo 6: criar o primeiro administrador
 
-Crie uma conta pelo site (botão **Entrar** → **Criar conta**) e transforme-a em administradora no banco:
+Crie a sua conta pelo site (botão **Entrar** → **Criar conta**). **Logo em seguida**, rode o comando abaixo: ele transforma em administradora a **última conta criada**, que é a sua.
 
-```bash
-psql -U postgres -d lapisari -c "UPDATE usuarios SET papel = 'admin' WHERE email = 'seu@email.com';"
+**Windows (A e B):**
+
+```powershell
+psql -U postgres -d lapisari -c "UPDATE usuarios SET papel = 'admin' WHERE id = (SELECT max(id) FROM usuarios);"
 ```
 
-Troque `seu@email.com` pelo e-mail da conta. Na próxima página aberta, a barra de administração aparece. Depois disso, os papéis das outras contas podem ser trocados pela tela **Usuários**, nessa barra.
+**Linux (C):**
+
+```bash
+sudo -u postgres psql -d lapisari -c "UPDATE usuarios SET papel = 'admin' WHERE id = (SELECT max(id) FROM usuarios);"
+```
+
+Abra qualquer página do site de novo: a barra de administração aparece. Depois disso, os papéis das outras contas podem ser trocados pela tela **Usuários**, nessa barra.
+
+### Para atualizar o projeto depois
+
+**A – Windows, servidor do PHP:**
+
+```powershell
+cd ~\mini-sistema; git pull
+```
+
+**B – Windows, XAMPP:**
+
+```powershell
+cd C:\xampp\htdocs\mini-sistema; git pull
+```
+
+**C – Linux:**
+
+```bash
+cd /var/www/html/mini-sistema && sudo git pull
+```
 
 ### Se algo der errado
 
 | O que aparece | Causa provável | O que fazer |
 |---|---|---|
-| Página sem estilo, só com texto e um desenho gigante | O `BASE_URL` não combina com o endereço | Revise o passo 4. |
+| `php`, `psql` ou `git` "não é reconhecido" | O Windows não sabe onde está o programa | Cole os dois comandos do passo 0. Se for o `git`, instale o Git for Windows. |
+| Página sem estilo, só com texto e um desenho gigante | O `BASE_URL` não combina com o endereço | Refaça o passo 4 do seu caso. |
 | Mensagem começando com `Erro: SQLSTATE` | O PHP não conseguiu falar com o banco | Confira o passo 3 e se o PostgreSQL está ligado. |
-| Erro 500 ("problema neste site") | Um erro no PHP, escondido pelo servidor | Veja a mensagem real no log: no Linux, `sudo tail -n 20 /var/log/nginx/error.log` (ou `/var/log/apache2/error.log`); no XAMPP, `C:\xampp\apache\logs\error.log`. |
-| "Não foi possível salvar a foto." | O PHP não tem permissão na pasta `uploads/lapiseiras` | No Linux, rode o `chown` do passo 5. |
-| `php`, `psql` ou `git` "não é reconhecido como comando" | O programa não está no PATH do Windows | Use o caminho completo, por exemplo `C:\xampp\php\php.exe` ou `"C:\Program Files\PostgreSQL\16\bin\psql.exe"`, ou use o pgAdmin. |
-| Alterações no CSS ou no JavaScript não aparecem | O navegador guardou a versão antiga | Aperte Ctrl+F5. |
+| Erro 500 ("problema neste site") | Um erro no PHP, escondido pelo servidor | Veja a mensagem real no log, com um dos comandos abaixo. |
+| "Não foi possível salvar a foto." | O PHP não pode gravar na pasta de fotos | No Linux, rode o comando `chown` do passo 5. |
+| Alterações no CSS ou no JavaScript não aparecem | O navegador guardou a versão antiga | Aperte Ctrl+F5 na página. |
+
+Log de erros do **XAMPP** (B):
+
+```powershell
+Get-Content C:\xampp\apache\logs\error.log -Tail 20
+```
+
+Log de erros do **nginx** (C):
+
+```bash
+sudo tail -n 20 /var/log/nginx/error.log
+```
+
+Log de erros do **Apache no Linux** (C):
+
+```bash
+sudo tail -n 20 /var/log/apache2/error.log
+```
 
 ### Dicas
 
-- **Animações:** para apresentar sem animações, abra `index.php?sem-animacao`; para voltar, `index.php?com-animacao`.
+- **Apresentar sem animações:** abra o site com `?sem-animacao` no fim do endereço, por exemplo http://localhost:8000/index.php?sem-animacao. Para voltar, http://localhost:8000/index.php?com-animacao.
 - **Fotos:** o tamanho recomendado é 1000 × 1000 px (quadrada), com a lapiseira centralizada e fundo transparente (PNG/WEBP) ou cinza-claro.
