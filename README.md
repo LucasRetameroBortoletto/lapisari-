@@ -306,8 +306,7 @@ No **Windows**, use o **PowerShell** (menu Iniciar → digite *PowerShell* → E
 | Caso | Quando usar | Pasta do projeto | Endereço no navegador |
 |---|---|---|---|
 | **A** – Windows, servidor do PHP | Testar no seu computador (o mais simples) | `C:\Users\SEU_USUARIO\mini-sistema` | http://localhost:8000 |
-| **B** – Windows, XAMPP | Usar o Apache do XAMPP | `C:\xampp\htdocs\mini-sistema` | http://localhost/mini-sistema/ |
-| **C** – Linux, Apache ou nginx | Publicar num servidor | `/var/www/html/mini-sistema` | `http://IP-DO-SERVIDOR/mini-sistema/` |
+| **B** – Linux, Apache ou nginx | Publicar num servidor | `/var/www/html/mini-sistema` | `http://IP-DO-SERVIDOR/mini-sistema/` |
 
 Siga os passos abaixo usando só os blocos do seu caso.
 
@@ -315,11 +314,7 @@ Siga os passos abaixo usando só os blocos do seu caso.
 
 Você precisa de **Git**, **PHP 8** (com as extensões `pdo_pgsql` e `fileinfo`) e **PostgreSQL**.
 
-**Windows (A e B):** se o PowerShell disser que `php` ou `psql` "não é reconhecido", estes dois comandos os encontram nas pastas padrão do XAMPP e do PostgreSQL. Eles valem até fechar a janela do PowerShell; se fechar, cole de novo.
-
-```powershell
-$env:Path += ";C:\xampp\php"
-```
+**Windows (A):** se o PowerShell disser que `php` ou `psql` "não é reconhecido", o comando abaixo encontra o `psql` na pasta padrão do PostgreSQL (vale até fechar a janela do PowerShell). Para o `php`, instale o PHP 8 e adicione a pasta dele ao PATH do Windows.
 
 ```powershell
 $env:Path += ";" + (Get-ChildItem "C:\Program Files\PostgreSQL" | Sort-Object Name | Select-Object -Last 1).FullName + "\bin"
@@ -339,7 +334,7 @@ php -m | Select-String "pdo_pgsql|fileinfo"
 psql --version
 ```
 
-**Linux (C):**
+**Linux (B):**
 
 ```bash
 git --version
@@ -363,13 +358,7 @@ O comando entra na pasta certa, baixa o projeto numa pasta chamada `mini-sistema
 cd ~; git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema; cd mini-sistema
 ```
 
-**B – Windows, XAMPP:**
-
-```powershell
-cd C:\xampp\htdocs; git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema; cd mini-sistema
-```
-
-**C – Linux:**
+**B – Linux:**
 
 ```bash
 cd /var/www/html && sudo git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema && cd mini-sistema
@@ -383,39 +372,25 @@ O nome `mini-sistema` no fim do `git clone` importa: sem ele a pasta se chamaria
 
 ### Passo 2: criar o usuário do banco
 
-O site **não** deve entrar no banco com o usuário `postgres`. Esse é o superusuário: ele pode apagar qualquer banco do servidor, criar usuários e até ler arquivos do computador. Se alguém descobrir a senha que fica no `connect_postgres.php`, teria tudo isso nas mãos.
+O site usa um usuário próprio, `lapisari`, em vez do `postgres` (o superusuário). O comando pede a senha nova duas vezes (anote, ela vai no passo 4) e, no Windows, depois a senha do `postgres`.
 
-Por isso, vamos criar um usuário só para o site, chamado `lapisari`. Ele vai ser o dono do banco `lapisari` e não vai mexer em mais nada.
-
-O comando pede **três senhas, nesta ordem**:
-
-1. `Enter password for new role:` a senha nova do usuário `lapisari`. Invente uma e anote, porque ela vai para o passo 4.
-2. `Enter it again:` a mesma senha nova, para confirmar.
-3. `Password:` a senha do usuário `postgres` (só no Windows; no Linux o `sudo` já cuida disso).
-
-A senha não aparece enquanto você digita. Isso é normal.
-
-**Windows (A e B):**
+**Windows (A):**
 
 ```powershell
 createuser -U postgres --pwprompt lapisari
 ```
 
-**Linux (C):**
+**Linux (B):**
 
 ```bash
 sudo -u postgres createuser --pwprompt lapisari
 ```
 
-O `createuser` cria um usuário comum: ele não é superusuário, não cria bancos e não cria outros usuários.
-
 ### Passo 3: criar o banco de dados
 
-O primeiro comando cria o banco `lapisari` com o usuário `lapisari` como dono (`OWNER`). Ele pede a senha do `postgres`.
+O primeiro comando cria o banco com o `lapisari` como dono. O segundo entra como `lapisari` e cria as tabelas, com 5 lapiseiras de exemplo.
 
-O segundo comando cria as tabelas (`usuarios`, `lapiseiras` e `carrinho_itens`) e cadastra 5 lapiseiras de exemplo. Ele já entra como `lapisari` (pede a senha criada no passo 2), então as tabelas também ficam com esse usuário como dono.
-
-**Windows (A e B):**
+**Windows (A):**
 
 ```powershell
 psql -U postgres -c "CREATE DATABASE lapisari OWNER lapisari;"
@@ -425,7 +400,7 @@ psql -U postgres -c "CREATE DATABASE lapisari OWNER lapisari;"
 psql -h localhost -U lapisari -d lapisari -f database/estrutura.sql
 ```
 
-**Linux (C):**
+**Linux (B):**
 
 ```bash
 sudo -u postgres psql -c "CREATE DATABASE lapisari OWNER lapisari;"
@@ -435,41 +410,31 @@ sudo -u postgres psql -c "CREATE DATABASE lapisari OWNER lapisari;"
 psql -h localhost -U lapisari -d lapisari -f /var/www/html/mini-sistema/database/estrutura.sql
 ```
 
-> **Por que `-h localhost`?** No Linux, sem ele o `psql` usa a autenticação *peer*. Ela só deixa entrar como `lapisari` quem também estiver logado no sistema operacional com um usuário `lapisari`, e o erro é `Peer authentication failed`. Com `-h localhost`, a conexão passa pela rede local e pede a senha, igual ao que o PHP faz.
+> **Pelo pgAdmin:** crie o usuário em *Login/Group Roles* → *Create* (nome `lapisari`, senha em *Definition*), crie o banco `lapisari` com *Owner* `lapisari` e, conectado como `lapisari`, rode o `database/estrutura.sql` no *Query Tool* (F5).
 
-> **Pelo pgAdmin, sem terminal:**
-> 1. Clique com o botão direito em *Login/Group Roles* → *Create* → *Login/Group Role*.
-> 2. Na aba *General*, dê o nome `lapisari`.
-> 3. Na aba *Definition*, escreva a senha.
-> 4. Na aba *Privileges*, deixe só *Can login?* ligado e salve.
-> 5. Depois, clique com o botão direito em *Databases* → *Create* → *Database*, dê o nome `lapisari`, escolha `lapisari` em *Owner* e salve.
-> 6. Por fim, conecte no banco novo **como `lapisari`**, abra *Query Tool* → abra o arquivo `database/estrutura.sql` → execute (F5).
+**Se o banco `lapisari` já existia** (o primeiro comando diz `already exists`), as tabelas antigas continuam sendo do `postgres` e o site dá erro 500. Passe-as para o `lapisari` (no Windows, troque `sudo -u postgres psql` por `psql -U postgres`):
 
-O script pode ser rodado de novo sem perder dados: ele não altera tabelas que já existem. Para recriar tudo do zero (apagando os dados), veja o passo 0 dentro do `estrutura.sql`.
-
-> **Já tinha criado o banco com o `postgres`?** Não precisa apagar nada. Crie o usuário (passo 2) e passe o banco e as tabelas para ele com o comando abaixo. No Linux, troque `psql -U postgres` por `sudo -u postgres psql`. As sequências dos `id` passam junto com as tabelas.
->
-> ```powershell
-> psql -U postgres -d lapisari -c "ALTER DATABASE lapisari OWNER TO lapisari; ALTER TABLE usuarios OWNER TO lapisari; ALTER TABLE lapiseiras OWNER TO lapisari; ALTER TABLE carrinho_itens OWNER TO lapisari;"
-> ```
+```bash
+sudo -u postgres psql -d lapisari -c "ALTER DATABASE lapisari OWNER TO lapisari; ALTER TABLE usuarios OWNER TO lapisari; ALTER TABLE lapiseiras OWNER TO lapisari; ALTER TABLE carrinho_itens OWNER TO lapisari;"
+```
 
 ### Passo 4: configurar a conexão com o banco
 
 Abra o arquivo da conexão:
 
-**Windows (A e B):**
+**Windows (A):**
 
 ```powershell
 notepad database\connect_postgres.php
 ```
 
-**Linux (C):**
+**Linux (B):**
 
 ```bash
 sudo nano /var/www/html/mini-sistema/database/connect_postgres.php
 ```
 
-Troque as quatro linhas do começo por estas e, na última, escreva a senha do usuário `lapisari` (criada no passo 2) no lugar de `sua_senha`:
+Troque as quatro linhas do começo por estas e, na última, escreva a senha do passo 2 no lugar de `sua_senha`:
 
 ```php
 $host = "localhost";
@@ -480,7 +445,7 @@ $pass = "sua_senha";
 
 - `$host`: onde o PostgreSQL está. `localhost` é o próprio computador; se o banco estiver em outra máquina, use o IP dela.
 - `$dbname`: o banco criado no passo 3.
-- `$user` e `$pass`: o usuário do site, criado no passo 2, e a senha dele. **Nunca** coloque aqui o `postgres`.
+- `$user` e `$pass`: o usuário criado no passo 2 e a senha dele.
 
 Salve (no Notepad, Ctrl+S; no nano, Ctrl+O, Enter e Ctrl+X para sair).
 
@@ -490,19 +455,7 @@ O `BASE_URL`, em `includes/config.php`, é a pasta do projeto no endereço do si
 
 **A – Windows, servidor do PHP:** não precisa mudar nada. O projeto já vem com `define('BASE_URL', '');`.
 
-**B – Windows, XAMPP:** abra o arquivo,
-
-```powershell
-notepad includes\config.php
-```
-
-troque a linha do `define('BASE_URL', ...)` por esta e salve:
-
-```php
-define('BASE_URL', '/mini-sistema');
-```
-
-**C – Linux:** este comando faz a troca sozinho:
+**B – Linux:** este comando faz a troca sozinho:
 
 ```bash
 sudo sed -i "s|define('BASE_URL', '[^']*');|define('BASE_URL', '/mini-sistema');|" /var/www/html/mini-sistema/includes/config.php
@@ -518,19 +471,7 @@ php -S localhost:8000
 
 Abra http://localhost:8000 no navegador. Deixe o PowerShell aberto enquanto usa o site; para parar, aperte Ctrl+C.
 
-**B – Windows, XAMPP:** abra o painel do XAMPP e clique em *Start* ao lado de *Apache*:
-
-```powershell
-Start-Process C:\xampp\xampp-control.exe
-```
-
-Depois, abra o site:
-
-```powershell
-Start-Process http://localhost/mini-sistema/
-```
-
-**C – Linux:** o Apache/nginx já está rodando. Dê ao PHP permissão de gravar na pasta de fotos (sem isso o upload de fotos falha):
+**B – Linux:** o Apache/nginx já está rodando. Dê ao PHP permissão de gravar na pasta de fotos (sem isso o upload de fotos falha):
 
 ```bash
 sudo chown -R www-data:www-data /var/www/html/mini-sistema/uploads/lapiseiras
@@ -546,15 +487,15 @@ echo "http://$(hostname -I | awk '{print $1}')/mini-sistema/"
 
 ### Passo 7: criar o primeiro administrador
 
-Crie a sua conta pelo site (botão **Entrar** → **Criar conta**). **Logo em seguida**, rode o comando abaixo: ele transforma em administradora a **última conta criada**, que é a sua. Ele entra como `lapisari`, o dono das tabelas, e pede a senha criada no passo 2.
+Crie a sua conta pelo site (botão **Entrar** → **Criar conta**). **Logo em seguida**, rode o comando abaixo: ele transforma em administradora a **última conta criada**, que é a sua. Ele pede a senha do passo 2.
 
-**Windows (A e B):**
+**Windows (A):**
 
 ```powershell
 psql -h localhost -U lapisari -d lapisari -c "UPDATE usuarios SET papel = 'admin' WHERE id = (SELECT max(id) FROM usuarios);"
 ```
 
-**Linux (C):**
+**Linux (B):**
 
 ```bash
 psql -h localhost -U lapisari -d lapisari -c "UPDATE usuarios SET papel = 'admin' WHERE id = (SELECT max(id) FROM usuarios);"
@@ -570,13 +511,7 @@ Abra qualquer página do site de novo: a barra de administração aparece. Depoi
 cd ~\mini-sistema; git pull
 ```
 
-**B – Windows, XAMPP:**
-
-```powershell
-cd C:\xampp\htdocs\mini-sistema; git pull
-```
-
-**C – Linux:**
+**B – Linux:**
 
 ```bash
 cd /var/www/html/mini-sistema && sudo git pull
@@ -586,29 +521,23 @@ cd /var/www/html/mini-sistema && sudo git pull
 
 | O que aparece | Causa provável | O que fazer |
 |---|---|---|
-| `php`, `psql` ou `git` "não é reconhecido" | O Windows não sabe onde está o programa | Cole os dois comandos do passo 0. Se for o `git`, instale o Git for Windows. |
+| `php`, `psql` ou `git` "não é reconhecido" | O Windows não sabe onde está o programa | Veja o passo 0. Se for o `git`, instale o Git for Windows. |
 | Página sem estilo, só com texto e um desenho gigante | O `BASE_URL` não combina com o endereço | Refaça o passo 5 do seu caso. |
 | Mensagem começando com `Erro: SQLSTATE` | O PHP não conseguiu falar com o banco | Confira o passo 4 e se o PostgreSQL está ligado. |
-| `password authentication failed for user "lapisari"` | A senha no `connect_postgres.php` não é a do usuário `lapisari` | Coloque a senha criada no passo 2. Se esqueceu, troque-a com `psql -U postgres -c "\password lapisari"` (no Linux, `sudo -u postgres psql -c "\password lapisari"`) e atualize o passo 4. |
-| `Peer authentication failed for user "lapisari"` | O `psql` foi rodado no Linux sem o `-h localhost` | Rode o comando de novo com `-h localhost`, como está nos passos 3 e 7. |
-| `permission denied for table ...` | As tabelas foram criadas pelo `postgres`, e não pelo `lapisari` | Rode o comando de "Já tinha criado o banco com o `postgres`?", no passo 3. |
+| `password authentication failed for user "lapisari"` | A senha no `connect_postgres.php` não é a do usuário `lapisari` | Confira a senha do passo 4. Se esqueceu, crie outra com `sudo -u postgres psql -c "\password lapisari"`. |
+| `Peer authentication failed for user "lapisari"` | O `psql` foi rodado no Linux sem o `-h localhost` | Use `-h localhost` no comando, como nos passos 3 e 7. |
+| `permission denied for table ...` | As tabelas foram criadas pelo `postgres`, e não pelo `lapisari` | Rode o comando `ALTER ... OWNER` do fim do passo 3. |
 | Erro 500 ("problema neste site") | Um erro no PHP, escondido pelo servidor | Veja a mensagem real no log, com um dos comandos abaixo. |
 | "Não foi possível salvar a foto." | O PHP não pode gravar na pasta de fotos | No Linux, rode o comando `chown` do passo 6. |
 | Alterações no CSS ou no JavaScript não aparecem | O navegador guardou a versão antiga | Aperte Ctrl+F5 na página. |
 
-Log de erros do **XAMPP** (B):
-
-```powershell
-Get-Content C:\xampp\apache\logs\error.log -Tail 20
-```
-
-Log de erros do **nginx** (C):
+Log de erros do **nginx** (B):
 
 ```bash
 sudo tail -n 20 /var/log/nginx/error.log
 ```
 
-Log de erros do **Apache no Linux** (C):
+Log de erros do **Apache no Linux** (B):
 
 ```bash
 sudo tail -n 20 /var/log/apache2/error.log
