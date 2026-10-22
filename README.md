@@ -255,7 +255,7 @@ mostrar_pagina('admin/relatorio', [                        // 3. entrega para a 
 A tela `views/paginas/admin/relatorio.php` recebe `$lapiseiras` e monta só o conteúdo da página (o `<main>`). O `mostrar_pagina()` coloca em volta a moldura `views/layout/pagina.php`, com o `<head>`, o header e o footer, que são iguais em todas as páginas. As telas de login e de criar conta usam o cartão preto `views/layout/cartao_login.php` no lugar do header e do footer.
 
 ```text
-mini-sistema/
+lapisari/
 ├── index.php              vitrine (página inicial)
 ├── app/                   área do admin: create, select, select_where, update, delete, usuarios
 ├── carrinho/              página do carrinho, adicionar e remover
@@ -305,8 +305,8 @@ No **Windows**, use o **PowerShell** (menu Iniciar → digite *PowerShell* → E
 
 | Caso | Quando usar | Pasta do projeto | Endereço no navegador |
 |---|---|---|---|
-| **A** – Windows, servidor do PHP | Testar no seu computador (o mais simples) | `C:\Users\SEU_USUARIO\mini-sistema` | http://localhost:8000 |
-| **B** – Linux, Apache ou nginx | Publicar num servidor | `/var/www/html/mini-sistema` | `http://IP-DO-SERVIDOR/mini-sistema/` |
+| **A** – Windows, servidor do PHP | Testar no seu computador (o mais simples) | `C:\Users\SEU_USUARIO\lapisari` | http://localhost:8000 |
+| **B** – Linux, Apache ou nginx | Publicar num servidor | `/var/www/html/lapisari` | `http://IP-DO-SERVIDOR/lapisari/` |
 
 Siga os passos abaixo usando só os blocos do seu caso.
 
@@ -350,23 +350,23 @@ psql --version
 
 ### Passo 1: baixar o projeto
 
-O comando entra na pasta certa, baixa o projeto numa pasta chamada `mini-sistema` e entra nela.
+O comando entra na pasta certa, baixa o projeto numa pasta chamada `lapisari` e entra nela.
 
 **A – Windows, servidor do PHP:**
 
 ```powershell
-cd ~; git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema; cd mini-sistema
+cd ~; git clone https://github.com/LucasRetameroBortoletto/lapisari-.git lapisari; cd lapisari
 ```
 
 **B – Linux:**
 
 ```bash
-cd /var/www/html && sudo git clone https://github.com/LucasRetameroBortoletto/lapisari-.git mini-sistema && cd mini-sistema
+cd /var/www/html && sudo git clone https://github.com/LucasRetameroBortoletto/lapisari-.git lapisari && cd lapisari
 ```
 
-O nome `mini-sistema` no fim do `git clone` importa: sem ele a pasta se chamaria `lapisari-`, e o endereço do site e o `BASE_URL` (passo 5) não combinariam.
+O nome `lapisari` no fim do `git clone` importa: sem ele a pasta se chamaria `lapisari-`, e o endereço do site e o `BASE_URL` (passo 5) não combinariam.
 
-**Os passos 2 a 5 continuam no mesmo terminal, dentro da pasta `mini-sistema`.**
+**Os passos 2 a 5 continuam no mesmo terminal, dentro da pasta `lapisari`.**
 
 > **Navegando no terminal:** `cd ..` volta para a pasta de cima, `cd ~` vai para a pasta do usuário, `pwd` mostra em que pasta você está e `ls` lista o que há nela.
 
@@ -407,7 +407,7 @@ sudo -u postgres psql -c "CREATE DATABASE lapisari OWNER lapisari;"
 ```
 
 ```bash
-psql -h localhost -U lapisari -d lapisari -f /var/www/html/mini-sistema/database/estrutura.sql
+psql -h localhost -U lapisari -d lapisari -f /var/www/html/lapisari/database/estrutura.sql
 ```
 
 **Confira a saída do segundo comando:** deve aparecer `CREATE TABLE` três vezes e `INSERT 0 5`. O `psql -f` não para quando dá erro: se aparecer qualquer `ERROR` ou `FATAL`, as tabelas não foram criadas e o site vai dar erro 500. Para ter certeza, liste as tabelas (devem aparecer `usuarios`, `lapiseiras` e `carrinho_itens`, com dono `lapisari`):
@@ -447,7 +447,7 @@ notepad database\connect_postgres.php
 **Linux (B):**
 
 ```bash
-sudo nano /var/www/html/mini-sistema/database/connect_postgres.php
+sudo nano /var/www/html/lapisari/database/connect_postgres.php
 ```
 
 Troque as quatro linhas do começo por estas e, na última, escreva a senha do passo 2 no lugar de `sua_senha`:
@@ -474,7 +474,7 @@ O `BASE_URL`, em `includes/config.php`, é a pasta do projeto no endereço do si
 **B – Linux:** este comando faz a troca sozinho:
 
 ```bash
-sudo sed -i "s|define('BASE_URL', '[^']*');|define('BASE_URL', '/mini-sistema');|" /var/www/html/mini-sistema/includes/config.php
+sudo sed -i "s|define('BASE_URL', '[^']*');|define('BASE_URL', '/lapisari');|" /var/www/html/lapisari/includes/config.php
 ```
 
 ### Passo 6: iniciar o site
@@ -490,13 +490,13 @@ Abra http://localhost:8000 no navegador. Deixe o PowerShell aberto enquanto usa 
 **B – Linux:** o Apache/nginx já está rodando. Dê ao PHP permissão de gravar na pasta de fotos (sem isso o upload de fotos falha):
 
 ```bash
-sudo chown -R www-data:www-data /var/www/html/mini-sistema/uploads/lapiseiras
+sudo chown -R www-data:www-data /var/www/html/lapisari/uploads/lapiseiras
 ```
 
 Este comando mostra o endereço do site para abrir no navegador:
 
 ```bash
-echo "http://$(hostname -I | awk '{print $1}')/mini-sistema/"
+echo "http://$(hostname -I | awk '{print $1}')/lapisari/"
 ```
 
 **Deu certo se** a página inicial abre com a assinatura "Lapisari" e, descendo, a vitrine mostra as 5 lapiseiras de exemplo.
@@ -524,13 +524,13 @@ Abra qualquer página do site de novo: a barra de administração aparece. Depoi
 **A – Windows, servidor do PHP:**
 
 ```powershell
-cd ~\mini-sistema; git pull
+cd ~\lapisari; git pull
 ```
 
 **B – Linux:**
 
 ```bash
-cd /var/www/html/mini-sistema && sudo git pull
+cd /var/www/html/lapisari && sudo git pull
 ```
 
 ### Se algo der errado
