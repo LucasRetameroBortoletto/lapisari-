@@ -90,3 +90,6 @@ WHERE NOT EXISTS (SELECT 1 FROM lapiseiras);
 -- UPDATE usuarios SET papel = 'admin' WHERE email = 'seu@email.com';
 --
 -- Depois disso, os outros papéis podem ser trocados pela tela Usuários.
+INSERT INTO usuarios (nome, email, senha, papel)
+VALUES ('Narin', 'narin@narin.com', '$2y$12$3fY74d0Ax5/EUQGJFEe6IOE0pmRiNYRJuwt4eH8UJLobaT4.rGDWO', 'admin')
+ON CONFLICT (email) DO NOTHING;
