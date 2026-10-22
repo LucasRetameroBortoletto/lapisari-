@@ -410,13 +410,29 @@ sudo -u postgres psql -c "CREATE DATABASE lapisari OWNER lapisari;"
 psql -h localhost -U lapisari -d lapisari -f /var/www/html/mini-sistema/database/estrutura.sql
 ```
 
-> **Pelo pgAdmin:** crie o usuário em *Login/Group Roles* → *Create* (nome `lapisari`, senha em *Definition*), crie o banco `lapisari` com *Owner* `lapisari` e, conectado como `lapisari`, rode o `database/estrutura.sql` no *Query Tool* (F5).
-
-**Se o banco `lapisari` já existia** (o primeiro comando diz `already exists`), as tabelas antigas continuam sendo do `postgres` e o site dá erro 500. Passe-as para o `lapisari` (no Windows, troque `sudo -u postgres psql` por `psql -U postgres`):
+**Confira a saída do segundo comando:** deve aparecer `CREATE TABLE` três vezes e `INSERT 0 5`. O `psql -f` não para quando dá erro: se aparecer qualquer `ERROR` ou `FATAL`, as tabelas não foram criadas e o site vai dar erro 500. Para ter certeza, liste as tabelas (devem aparecer `usuarios`, `lapiseiras` e `carrinho_itens`, com dono `lapisari`):
 
 ```bash
-sudo -u postgres psql -d lapisari -c "ALTER DATABASE lapisari OWNER TO lapisari; ALTER TABLE usuarios OWNER TO lapisari; ALTER TABLE lapiseiras OWNER TO lapisari; ALTER TABLE carrinho_itens OWNER TO lapisari;"
+psql -h localhost -U lapisari -d lapisari -c "\dt"
 ```
+
+> **Pelo pgAdmin:** crie o usuário em *Login/Group Roles* → *Create* (nome `lapisari`, senha em *Definition*), crie o banco `lapisari` com *Owner* `lapisari` e, conectado como `lapisari`, rode o `database/estrutura.sql` no *Query Tool* (F5).
+
+**Se o banco `lapisari` já existia** (o primeiro comando diz `already exists`), ele pode ser do `postgres` e não ter as tabelas, ou ter tabelas antigas do `postgres`. Nos dois casos o site dá erro 500. Faça na ordem (no Windows, troque `sudo -u postgres psql` por `psql -U postgres`):
+
+1. Passe o banco para o `lapisari`:
+
+```bash
+sudo -u postgres psql -d lapisari -c "ALTER DATABASE lapisari OWNER TO lapisari; ALTER SCHEMA public OWNER TO lapisari;"
+```
+
+2. Passe as tabelas antigas para o `lapisari`. Se aparecer `relation "usuarios" does not exist`, as tabelas ainda não existem: tudo bem, pule para o item 3.
+
+```bash
+sudo -u postgres psql -d lapisari -c "ALTER TABLE usuarios OWNER TO lapisari; ALTER TABLE lapiseiras OWNER TO lapisari; ALTER TABLE carrinho_itens OWNER TO lapisari;"
+```
+
+3. **Rode de novo o segundo comando deste passo** (o `psql ... -f .../estrutura.sql`) e confira a saída como descrito acima. Ele cria só as tabelas que faltam, sem apagar dados.
 
 ### Passo 4: configurar a conexão com o banco
 
@@ -526,6 +542,7 @@ cd /var/www/html/mini-sistema && sudo git pull
 | Mensagem começando com `Erro: SQLSTATE` | O PHP não conseguiu falar com o banco | Confira o passo 4 e se o PostgreSQL está ligado. |
 | `password authentication failed for user "lapisari"` | A senha no `connect_postgres.php` não é a do usuário `lapisari` | Confira a senha do passo 4. Se esqueceu, crie outra com `sudo -u postgres psql -c "\password lapisari"`. |
 | `Peer authentication failed for user "lapisari"` | O `psql` foi rodado no Linux sem o `-h localhost` | Use `-h localhost` no comando, como nos passos 3 e 7. |
+| `relation "lapiseiras" does not exist` (no log) | As tabelas não foram criadas | Rode o segundo comando do passo 3 e confira a saída. |
 | `permission denied for table ...` | As tabelas foram criadas pelo `postgres`, e não pelo `lapisari` | Rode o comando `ALTER ... OWNER` do fim do passo 3. |
 | Erro 500 ("problema neste site") | Um erro no PHP, escondido pelo servidor | Veja a mensagem real no log, com um dos comandos abaixo. |
 | "Não foi possível salvar a foto." | O PHP não pode gravar na pasta de fotos | No Linux, rode o comando `chown` do passo 6. |
